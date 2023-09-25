@@ -16,11 +16,29 @@ if not os.path.exists(resultados):
 archivos = os.listdir(imagenes)
 
 imagenes_al_azar = random.sample(archivos,5)
-
+def pitagoras(imagen):
+    x, y = imagen.shape
+    diagonal = math.ceil(math.sqrt(x*2 + y*2))
+    return diagonal
 for imagen_nombre in imagenes_al_azar:
     imagen_path = os.path.join(imagenes, imagen_nombre)
     
-    
+    # Cargar la imagen
+    img = cv2.imread(imagen_path, cv2.IMREAD_GRAYSCALE)
+    edge = cannySolo(img,100,200)
+    x,y=edge.shape
+    diag = pitagoras(edge)
+
+    matrizAcum = np.zeros((diag*2, 180))
+
+    for i in range(x):
+        for j in range(y):
+            if edge[i, j] == 255:
+                for t in range(0,180):
+                    r = int(i * math.cos(math.radians(t)) + j * math.sin(math.radians(t))) + diag
+                    matrizAcum[r, t] += 1
+
+    maximo_valor_global = np.max(matrizAcum)
     
     cota= 300
     x1, y1 = matrizAcum.shape
