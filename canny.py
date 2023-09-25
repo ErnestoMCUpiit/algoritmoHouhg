@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
-rick = cv2.imread("road.jpg")
-escgris= cv2.cvtColor(rick, cv2.COLOR_BGR2GRAY)
+
 
 def cannySolo (escgris,umbrals,umbrali):
     filas, cols =(escgris.shape[0], escgris.shape[1])

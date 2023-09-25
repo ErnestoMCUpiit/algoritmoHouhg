@@ -12,14 +12,15 @@ resultados = "results"
 
 if not os.path.exists(resultados):
     os.makedirs(resultados)
-    
 archivos = os.listdir(imagenes)
 
 imagenes_al_azar = random.sample(archivos,5)
+
 def pitagoras(imagen):
     x, y = imagen.shape
-    diagonal = math.ceil(math.sqrt(x*2 + y*2))
+    diagonal = math.ceil(math.sqrt(x**2 + y**2))
     return diagonal
+
 for imagen_nombre in imagenes_al_azar:
     imagen_path = os.path.join(imagenes, imagen_nombre)
     
@@ -39,7 +40,7 @@ for imagen_nombre in imagenes_al_azar:
                     matrizAcum[r, t] += 1
 
     maximo_valor_global = np.max(matrizAcum)
-    
+
     cota= 300
     x1, y1 = matrizAcum.shape
     max_local = np.zeros((x1,y1))
@@ -69,6 +70,7 @@ for imagen_nombre in imagenes_al_azar:
     # x2 = int(x1 + 100 * np.cos(np.deg2rad(theta)))  -x
     # y2 = int(y1 + 100 * np.sin(np.deg2rad(theta))) - y
     # print(x1,y1,x2,y2)
+
     nombre_resultado = f"resultado_{imagen_nombre}"
     resultado_path = os.path.join(resultados, nombre_resultado)
     cv2.imwrite(resultado_path, matrizAcum)
