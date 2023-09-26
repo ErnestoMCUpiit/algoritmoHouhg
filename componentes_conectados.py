@@ -44,7 +44,21 @@ for imagen_nombre in imagenes_al_azar:
     threshold_value = 150
     _, image = cv2.threshold(read, threshold_value, 255, cv2.THRESH_BINARY)
 
+    def initialize(n):
+        Parent = [i for i in range(n)]
+    return Parent
+
+    def find(Parent, x):
+        if Parent[x] != x:
+            Parent[x] = find(Parent, Parent[x])
+        return Parent[x]
+
+    def union(Parent, x, y):
+        Parent[find(Parent, y)] = find(Parent, x)
+    
     rows, cols = image.shape
+
+    Parent = initialize(rows * cols)
 
     label = 0
 
@@ -74,12 +88,47 @@ for imagen_nombre in imagenes_al_azar:
                     if not neighbors:
                         label += 1
                         image[i, j] = min(label, 255)
+                        Parent[label] = label
                     else:
                         min_neighbor = min(neighbors)
                         image[i, j] = min(min_neighbor, 255)
+                        for neighbor in neighbors:
+                            if neighbor != min_neighbor:
+                                union(Parent, min_neighbor, neighbor)
 
         if np.array_equal(image, previous):
             same = True
+
+    label_mapping = {}
+
+    for i in range(rows):
+        for j in range(cols):
+            if image[i, j] != 0:
+                root_label = find(Parent, image[i, j])
+                if root_label not in label_mapping:
+                    label_mapping[root_label] = len(label_mapping) + 1
+                image[i, j] = label_mapping[root_label]
+
+    for i in range(rows):
+        for j in range(cols):
+            if image[i, j] in label_mapping:
+                image[i, j] = label_mapping[image[i, j]]
+
+    unique_labels = np.unique(image)
+    num_components = len(unique_labels)
+
+    print(f"Componentes encontrados: {num_components}")
+
+    components = {}
+    for i in range(1, label + 1):
+        root = find(Parent, i)
+        if root not in components:
+            components[root] = []
+        components[root].append(i)
+
+    for parent, connected_components in components.items():
+        print(f"Padre {parent} tiene los hijos:")
+        print(connected_components)
 
     colors = np.random.randint(0, 256, size=(label, 3), dtype=np.uint8)
 
